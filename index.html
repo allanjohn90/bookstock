@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f7f7f4" />
+  <meta name="description" content="Scan book ISBNs and prepare a Shopify-ready product sheet." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="public/icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Bookstock · ISBN to Shopify</title>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Bookstock home"><span class="brand-mark">b.</span><span>bookstock</span></a>
+      <button class="icon-button" id="settingsBtn" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 13.5 1.1.9-1.2 2.1-1.4-.5a7.7 7.7 0 0 1-1.5.9l-.2 1.5h-2.4l-.3-1.5a7.7 7.7 0 0 1-1.7 0l-.9 1.2-2.1-1.2.5-1.4a7.7 7.7 0 0 1-.9-1.5l-1.5-.2v-2.4l1.5-.3a7.7 7.7 0 0 1 0-1.7l-1.2-.9 1.2-2.1 1.4.5a7.7 7.7 0 0 1 1.5-.9l.2-1.5h2.4l.3 1.5a7.7 7.7 0 0 1 1.7 0l.9-1.2 2.1 1.2-.5 1.4a7.7 7.7 0 0 1 .9 1.5l1.5.2v2.4l-1.5.3a7.7 7.7 0 0 1-.1 1.7Z"/></svg></button>
+    </header>
+
+    <section class="intro">
+      <div class="eyebrow"><span class="live-dot"></span> SHOPIFY BOOK INTAKE</div>
+      <h1>One scan.<br /><em>One less listing.</em></h1>
+      <p>Scan a book’s barcode to gather its details. Build a clean sheet, ready for your finishing touches.</p>
+    </section>
+
+    <section class="capture-card">
+      <div class="capture-heading"><div><h2>Add a book</h2><p>ISBN-10 or ISBN-13</p></div><span class="scan-icon"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 9v6m3-6v6m3-6v6m2-6v6m2-6v6"/></svg></span></div>
+      <button id="scanBtn" class="scan-button"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="12" r="3.25"/></svg><span>Scan barcode</span><span class="arrow">↗</span></button>
+      <div class="or-divider"><span></span>or enter ISBN<span></span></div>
+      <form id="isbnForm" class="isbn-form"><label class="sr-only" for="isbnInput">ISBN</label><input id="isbnInput" type="text" inputmode="numeric" autocomplete="off" placeholder="e.g. 9780140328721" maxlength="17"/><button type="submit" aria-label="Look up ISBN">→</button></form>
+      <div class="hint"><span class="check">✓</span> Camera access works in Safari on your iPhone</div>
+    </section>
+
+    <section id="scannerPanel" class="scanner-panel hidden" aria-live="polite"><div class="scanner-top"><div><strong>Point at the barcode</strong><span>Keep the ISBN inside the frame</span></div><button class="text-button" id="closeScanner">Cancel</button></div><div class="video-wrap"><video id="video" playsinline muted></video><div class="scan-frame"><i></i></div></div><p class="scanner-note" id="scannerNote">Starting camera…</p></section>
+
+    <div id="status" class="status hidden" role="status"></div>
+
+    <section class="shelf-section">
+      <div class="section-head"><div><div class="eyebrow muted">YOUR BATCH</div><h2>Scanned books <span id="countBadge">0</span></h2></div><button id="clearBtn" class="text-button hidden">Clear batch</button></div>
+      <div id="emptyState" class="empty-state"><div class="empty-art"><span>✳</span><span>▤</span><span>✦</span></div><strong>Your shelf is clear</strong><p>Books you scan will collect here<br/>until you export your sheet.</p></div>
+      <div id="bookList" class="book-list"></div>
+      <div id="exportBar" class="export-bar hidden"><div class="export-copy"><strong>Ready for your sheet?</strong><span id="exportCount">0 books · Shopify template</span></div><button id="exportBtn" class="export-button">Export sheet <span>↗</span></button></div>
+    </section>
+    <footer><span>Made for <strong>Sparkling Bookshelf</strong></span><span>ISBN lookup · CSV + Sheets</span></footer>
+  </main>
+  <div id="modalBackdrop" class="modal-backdrop hidden"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-head"><div><div class="eyebrow muted">PREFERENCES</div><h2 id="modalTitle">Connect your sheet</h2></div><button id="closeSettings" class="icon-button" aria-label="Close">×</button></div><p class="modal-intro">Add a Google Apps Script web app URL to send each batch straight to your Google Sheet. You can also export a CSV anytime.</p><label class="field-label" for="sheetUrl">Apps Script web app URL <span>optional</span></label><input id="sheetUrl" class="settings-input" type="url" placeholder="https://script.google.com/macros/s/…/exec"/><div class="modal-actions"><button id="saveSettings" class="scan-button">Save connection</button><button id="settingsDone" class="text-button">Done</button></div><p class="fineprint">Your books stay on this device until you export or send them. Metadata comes from Google Books, with Open Library as a fallback.</p></section></div>
+  <script src="app.js"></script>
+</body>
+</html>
