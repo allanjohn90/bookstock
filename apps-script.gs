@@ -18,6 +18,13 @@ function doPost(e) {
       // Add newly introduced export fields to the end of an existing header row.
       var existingWidth = Math.max(sheet.getLastColumn(), 1);
       var existingHeaders = sheet.getRange(1, 1, 1, existingWidth).getValues()[0];
+      var oldCoverTypeHeader = 'Book cover type (product.metafields.custom.book_cover_type)';
+      var newCoverTypeHeader = 'Book cover type (product.metafields.shopify.book-cover-type)';
+      var oldCoverTypeIndex = existingHeaders.indexOf(oldCoverTypeHeader);
+      if (oldCoverTypeIndex !== -1 && headers.indexOf(newCoverTypeHeader) !== -1) {
+        sheet.getRange(1, oldCoverTypeIndex + 1).setValue(newCoverTypeHeader);
+        existingHeaders[oldCoverTypeIndex] = newCoverTypeHeader;
+      }
       var missingHeaders = headers.filter(function(header) { return existingHeaders.indexOf(header) === -1; });
       if (missingHeaders.length) sheet.getRange(1, existingWidth + 1, 1, missingHeaders.length).setValues([missingHeaders]);
     }
